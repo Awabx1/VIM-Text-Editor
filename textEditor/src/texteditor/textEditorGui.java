@@ -7,6 +7,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -16,7 +18,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class textEditorGui extends javax.swing.JFrame {
+
+public class textEditorGui extends javax.swing.JFrame implements ActionListener  {
+    
+ KeyHandler khandle=new KeyHandler(this);
 String filename;
 String fileaddress;
 Clipboard clipboard = getToolkit().getSystemClipboard();
@@ -47,6 +52,7 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
         copybutton = new javax.swing.JMenuItem();
         pastebutton = new javax.swing.JMenuItem();
 
+        textArea.addKeyListener(khandle);
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
 
@@ -74,43 +80,28 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
 
         newbutton.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, 0));
         newbutton.setText("New");
-        newbutton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newbuttonActionPerformed(evt);
-            }
-        });
+        newbutton.addActionListener((ActionListener) this);
+        newbutton.setActionCommand("New");
         jMenu3.add(newbutton);
 
         openbutton.setText("Open");
-        openbutton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                openbuttonActionPerformed(evt);
-            }
-        });
+        openbutton.addActionListener((ActionListener)this);
+        openbutton.setActionCommand("Open");
         jMenu3.add(openbutton);
 
         savebutton.setText("Save");
-        savebutton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                savebuttonActionPerformed(evt);
-            }
-        });
+        savebutton.addActionListener((ActionListener)this);
+        savebutton.setActionCommand("Save");
         jMenu3.add(savebutton);
 
         saveasbutton.setText("Save As");
-        saveasbutton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveasbuttonActionPerformed(evt);
-            }
-        });
+        saveasbutton.addActionListener((ActionListener)this);
+        saveasbutton.setActionCommand("Save As");
         jMenu3.add(saveasbutton);
 
         exitbutotn.setText("Exit");
-        exitbutotn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitbutotnActionPerformed(evt);
-            }
-        });
+        exitbutotn.addActionListener((ActionListener)this);
+        exitbutotn.setActionCommand("Exit");
         jMenu3.add(exitbutotn);
 
         jMenuBar2.add(jMenu3);
@@ -118,29 +109,20 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
         jMenu4.setText("Edit");
 
         cutbutton.setText("Cut");
-        cutbutton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cutbuttonActionPerformed(evt);
-            }
-        });
+        cutbutton.addActionListener((ActionListener)this);
+        cutbutton.setActionCommand("Cut");
         jMenu4.add(cutbutton);
 
         copybutton.setText("Copy");
-        copybutton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                copybuttonActionPerformed(evt);
-            }
-        });
+        copybutton.addActionListener((ActionListener)this);
+        copybutton.setActionCommand("Copy");
         jMenu4.add(copybutton);
 
         pastebutton.setText("Paste");
-        pastebutton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pastebuttonActionPerformed(evt);
-            }
-        });
+        pastebutton.addActionListener((ActionListener)this);
+        pastebutton.setActionCommand("Paste");
         jMenu4.add(pastebutton);
-
+//
         jMenuBar2.add(jMenu4);
 
         setJMenuBar(jMenuBar2);
@@ -158,8 +140,48 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        String command=e.getActionCommand();
+        if(e.getActionCommand().equals("copy"))
+        {
+           copybuttonActionPerformed();
+        }
+        else if(e.getActionCommand().equals("cut"))
+        {
+            cutbuttonActionPerformed();
+        }
+        else if(e.getActionCommand().equals("paste"))
+        {
+            pastebuttonActionPerformed();
+        }
+        else if(command.equals("Save"))
+        {
+            savebuttonActionPerformed(); 
+        }
+        else if(command=="Exit")
+        {
+            exitbutotnActionPerformed();
+        }
+        else if(command.equals("Save As"))
+        {
+           saveasbuttonActionPerformed();
+        }
+        else if(command.equals("Open"))
+        {
+            openbuttonActionPerformed();
+        }
+        else if(command.equals("New"))
+        {
+            newbuttonActionPerformed();
+        }
+        
+    }
 
-    private void copybuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copybuttonActionPerformed
+    public void copybuttonActionPerformed() {//GEN-FIRST:event_copybuttonActionPerformed
         
          Robot robot;
     try {
@@ -175,13 +197,13 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
         clipboard.setContents(copyselection, copyselection);
     }//GEN-LAST:event_copybuttonActionPerformed
 
-    private void newbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newbuttonActionPerformed
+    public void newbuttonActionPerformed() {//GEN-FIRST:event_newbuttonActionPerformed
         textArea.setText("");
         setTitle(filename);
         
     }//GEN-LAST:event_newbuttonActionPerformed
 
-    private void openbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openbuttonActionPerformed
+    public void openbuttonActionPerformed() {//GEN-FIRST:event_openbuttonActionPerformed
        FileDialog fileDialog = new FileDialog(textEditorGui.this, "Open File", FileDialog.LOAD);
        fileDialog.setVisible(true);
        
@@ -209,7 +231,7 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
        
     }//GEN-LAST:event_openbuttonActionPerformed
 
-    private void savebuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_savebuttonActionPerformed
+   public void savebuttonActionPerformed() {//GEN-FIRST:event_savebuttonActionPerformed
         FileDialog fileDialog = new FileDialog(textEditorGui.this, "save file", FileDialog.SAVE);
         fileDialog.setVisible(true);
         
@@ -229,18 +251,18 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
     }
     }//GEN-LAST:event_savebuttonActionPerformed
 
-    private void exitbutotnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitbutotnActionPerformed
+    public void exitbutotnActionPerformed() {//GEN-FIRST:event_exitbutotnActionPerformed
         System.exit(0);
     }//GEN-LAST:event_exitbutotnActionPerformed
 
-    private void cutbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cutbuttonActionPerformed
+    public void cutbuttonActionPerformed() {//GEN-FIRST:event_cutbuttonActionPerformed
         String cutstring = textArea.getSelectedText();
         StringSelection cutselection=new StringSelection(cutstring);
         clipboard.setContents(cutselection, cutselection);
         textArea.replaceRange("", textArea.getSelectionStart(), textArea.getSelectionEnd());
     }//GEN-LAST:event_cutbuttonActionPerformed
 
-    private void pastebuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pastebuttonActionPerformed
+    public void pastebuttonActionPerformed() {//GEN-FIRST:event_pastebuttonActionPerformed
         try{
             Transferable pastetext = clipboard.getContents(textEditorGui.this);
             String sel = (String) pastetext.getTransferData(DataFlavor.stringFlavor);
@@ -250,7 +272,7 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
         }
     }//GEN-LAST:event_pastebuttonActionPerformed
 
-    private void saveasbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveasbuttonActionPerformed
+    public void saveasbuttonActionPerformed() {//GEN-FIRST:event_saveasbuttonActionPerformed
         FileDialog fd = new FileDialog (textEditorGui.this, "Save", FileDialog.SAVE);
         fd.setVisible(true);
         
@@ -264,7 +286,7 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
             FileWriter fw=new FileWriter(filename);
             fw.write(textArea.getText());
             fw.close();
-        }catch(Exception e){
+        }catch(IOException e){
             System.out.println("File Not Found");
         }
         
