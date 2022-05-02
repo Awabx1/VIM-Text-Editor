@@ -8,9 +8,14 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -216,7 +221,34 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
         if(fileDialog.getFile() != null) {
         filename=fileDialog.getDirectory() + fileDialog.getFile();
         setTitle(filename);
-        
+         
+
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(textEditorGui.class.getName()).log(Level.SEVERE, null, ex);
+            }
+String url ="jdbc:mysql://localhost:3306/file";
+System.out.println("step1 ");
+                                            try (Connection con = DriverManager.getConnection(url,"root", "12345678")) {
+                                                System.out.println("step2");
+                                               
+//Statement st=con.createStatement();
+PreparedStatement ps=con.prepareStatement("insert into filesave values(?,?)");
+    String fi;
+//File f=new File(fileName);
+FileReader fr = null;
+                try {
+                    fr = new FileReader(filename);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(textEditorGui.class.getName()).log(Level.SEVERE, null, ex);
+                }
+double rd=Math.random();
+int id=(int)rd;
+ps.setInt(1,id);
+ps.setCharacterStream(2,fr,(int)filename.length());
+int i=ps.executeUpdate();
+System.out.println(i+" records affected");
         try{
             FileWriter fileWriter = new FileWriter(filename);
             fileWriter.write(textArea.getText());
@@ -226,9 +258,12 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
         } catch (IOException e) {
             System.out.println("File Not Found");
         }
-    }
+    }       catch (SQLException ex) {
+                Logger.getLogger(textEditorGui.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }//GEN-LAST:event_savebuttonActionPerformed
-
+        
+    }
     private void exitbutotnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitbutotnActionPerformed
         System.exit(0);
     }//GEN-LAST:event_exitbutotnActionPerformed
