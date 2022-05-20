@@ -7,17 +7,11 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +21,9 @@ String fileaddress;
 Clipboard clipboard = getToolkit().getSystemClipboard();
     public textEditorGui() {
         initComponents();
+    }
+
+    textEditorGui(String name) {
     }
 
     
@@ -40,6 +37,7 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         textArea = new javax.swing.JTextArea();
+        textArea1 = new java.awt.TextArea();
         jMenuBar2 = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
         newbutton = new javax.swing.JMenuItem();
@@ -62,6 +60,24 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
 
         textArea.setColumns(20);
         textArea.setRows(5);
+        textArea.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                textAreaInputMethodTextChanged(evt);
+            }
+        });
+        textArea.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                textAreaKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                textAreaKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                textAreaKeyTyped(evt);
+            }
+        });
         jScrollPane1.setViewportView(textArea);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -86,6 +102,7 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
         });
         jMenu3.add(newbutton);
 
+        openbutton.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, 0));
         openbutton.setText("Open");
         openbutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -94,6 +111,7 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
         });
         jMenu3.add(openbutton);
 
+        savebutton.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, 0));
         savebutton.setText("Save");
         savebutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -102,6 +120,7 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
         });
         jMenu3.add(savebutton);
 
+        saveasbutton.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, 0));
         saveasbutton.setText("Save As");
         saveasbutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -110,6 +129,7 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
         });
         jMenu3.add(saveasbutton);
 
+        exitbutotn.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, 0));
         exitbutotn.setText("Exit");
         exitbutotn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -202,7 +222,7 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
           String line=null;
           
           while((line = reader.readLine()) != null) {
-              sb.append(line+ "\n");
+              StringBuilder append = sb.append(line).append("\n");
               textArea.setText(sb.toString());
           }
           reader.close();
@@ -222,49 +242,18 @@ Clipboard clipboard = getToolkit().getSystemClipboard();
         filename=fileDialog.getDirectory() + fileDialog.getFile();
         setTitle(filename);
          
+ texteditorDAO s1 = new texteditorDAOimp();
+ textEditorGui s2 = null;
+ 
+        s1.save(s2);
+         
 
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(textEditorGui.class.getName()).log(Level.SEVERE, null, ex);
-            }
-String url ="jdbc:mysql://localhost:3306/file";
-System.out.println("step1 ");
-                                            try (Connection con = DriverManager.getConnection(url,"root", "12345678")) {
-                                                System.out.println("step2");
-                                               
-//Statement st=con.createStatement();
-PreparedStatement ps=con.prepareStatement("insert into filesave values(?,?)");
-    String fi;
-//File f=new File(fileName);
-FileReader fr = null;
-                try {
-                    fr = new FileReader(filename);
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(textEditorGui.class.getName()).log(Level.SEVERE, null, ex);
-                }
-double rd=Math.random();
-int id=(int)rd;
-ps.setInt(1,id);
-ps.setCharacterStream(2,fr,(int)filename.length());
-int i=ps.executeUpdate();
-System.out.println(i+" records affected");
-        try{
-            FileWriter fileWriter = new FileWriter(filename);
-            fileWriter.write(textArea.getText());
-            setTitle(filename);
-            fileWriter.close();
             
-        } catch (IOException e) {
-            System.out.println("File Not Found");
-        }
-    }       catch (SQLException ex) {
-                Logger.getLogger(textEditorGui.class.getName()).log(Level.SEVERE, null, ex);
-            }
     }//GEN-LAST:event_savebuttonActionPerformed
         
     }
     private void exitbutotnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitbutotnActionPerformed
+
         System.exit(0);
     }//GEN-LAST:event_exitbutotnActionPerformed
 
@@ -280,7 +269,7 @@ System.out.println(i+" records affected");
             Transferable pastetext = clipboard.getContents(textEditorGui.this);
             String sel = (String) pastetext.getTransferData(DataFlavor.stringFlavor);
             textArea.replaceRange(sel,textArea.getSelectionStart(), textArea.getSelectionEnd());
-        } catch (Exception e) {
+        } catch (UnsupportedFlavorException | IOException e) {
             System.out.println("Did not Work");
         }
     }//GEN-LAST:event_pastebuttonActionPerformed
@@ -296,14 +285,30 @@ System.out.println(i+" records affected");
         }
         
         try{
-            FileWriter fw=new FileWriter(filename);
-            fw.write(textArea.getText());
-            fw.close();
-        }catch(Exception e){
+            try (FileWriter fw = new FileWriter(filename)) {
+                fw.write(textArea.getText());
+            }
+        }catch(IOException e){
             System.out.println("File Not Found");
         }
         
     }//GEN-LAST:event_saveasbuttonActionPerformed
+
+    private void textAreaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textAreaKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_textAreaKeyPressed
+
+    private void textAreaInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_textAreaInputMethodTextChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_textAreaInputMethodTextChanged
+
+    private void textAreaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textAreaKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_textAreaKeyReleased
+
+    private void textAreaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textAreaKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_textAreaKeyTyped
 
     /**
      * @param args the command line arguments
@@ -333,10 +338,8 @@ System.out.println(i+" records affected");
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new textEditorGui().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new textEditorGui().setVisible(true);
         });
     }
 
@@ -358,5 +361,38 @@ System.out.println(i+" records affected");
     private javax.swing.JMenuItem saveasbutton;
     private javax.swing.JMenuItem savebutton;
     private javax.swing.JTextArea textArea;
+    private java.awt.TextArea textArea1;
     // End of variables declaration//GEN-END:variables
+
+    public void copybuttonActionPerformed() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void newbuttonActionPerformed() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void openbuttonActionPerformed() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void exitbutotnActionPerformed() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void cutbuttonActionPerformed() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void pastebuttonActionPerformed() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void saveasbuttonActionPerformed() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void savebuttonActionPerformed() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
